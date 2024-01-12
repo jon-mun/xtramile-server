@@ -32,4 +32,14 @@ public class StudentEntity {
     @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
+
+    public int getAge() {
+        Date now = new Date();
+        long diff = now.getTime() - dob.getTime();
+        return (int) (diff / (1000L * 60L * 60L * 24L * 365L));
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

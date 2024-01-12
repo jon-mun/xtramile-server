@@ -3,6 +3,7 @@ package com.jonmun.xtramile_server.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jonmun.xtramile_server.domain.dto.CreateStudentDto;
+import com.jonmun.xtramile_server.domain.dto.GetStudentDto;
 import com.jonmun.xtramile_server.domain.entities.StudentEntity;
 import com.jonmun.xtramile_server.mappers.Mapper;
 import com.jonmun.xtramile_server.services.StudentService;
@@ -45,18 +46,28 @@ public class StudentController {
     }
 
     @GetMapping("/students")
-    public List<CreateStudentDto> getStudents() {
+    public List<GetStudentDto> getStudents() {
         List<StudentEntity> students = studentService.findAll();
 
-        return students.stream().map(studentMapper::mapTo).collect(Collectors.toList());
+        return students.stream()
+                .map(studentEntity -> new GetStudentDto(
+                        studentEntity.getId(),
+                        studentEntity.getFullName(),
+                        studentEntity.getAge()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/students/{id}")
-    public ResponseEntity<CreateStudentDto> getStudentById(@PathVariable("id") String id) {
+    public ResponseEntity<GetStudentDto> getStudentById(@PathVariable("id") String id) {
         StudentEntity studentEntity = studentService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        return new ResponseEntity<>(studentMapper.mapTo(studentEntity), HttpStatus.OK);
+        GetStudentDto studentDto = new GetStudentDto(
+                studentEntity.getId(),
+                studentEntity.getFullName(),
+                studentEntity.getAge());
+
+        return new ResponseEntity<>(studentDto, HttpStatus.OK);
     }
 
     @PatchMapping("/students/{id}")

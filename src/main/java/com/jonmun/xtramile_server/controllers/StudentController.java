@@ -60,16 +60,11 @@ public class StudentController {
     }
 
     @GetMapping("/students/{id}")
-    public ResponseEntity<GetStudentDto> getStudentById(@PathVariable("id") String id) {
+    public ResponseEntity<CreateStudentDto> getStudentById(@PathVariable("id") String id) {
         StudentEntity studentEntity = studentService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        GetStudentDto studentDto = new GetStudentDto(
-                studentEntity.getId(),
-                studentEntity.getFullName(),
-                studentEntity.getAge());
-
-        return new ResponseEntity<>(studentDto, HttpStatus.OK);
+        return new ResponseEntity<>(studentMapper.mapTo(studentEntity), HttpStatus.OK);
     }
 
     @PatchMapping("/students/{id}")
